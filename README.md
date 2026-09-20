@@ -1,22 +1,86 @@
-# Data
+# Project 01 — Youth Football Growth & Maturation Analysis
 
-This public portfolio repository deliberately excludes the original internship player database.
+Exploratory football-data project based on work developed during a youth-football internship.
 
-## Public demo data
+## Problem
 
-`synthetic_players.csv` contains 26 fictitious players created only to demonstrate the expected input structure. It does not represent real athletes.
+Players in the same age group can differ substantially in growth and physical development. This project explores how simple anthropometric data can be transformed into age-standardized indicators and analysed computationally.
 
-The bundled `reference/` files are also synthetic demonstration tables:
+## Technical workflow
 
-- `synthetic_hfa_boys_reference.csv` uses the schema `Month, P3, P50, P97`;
-- `synthetic_bmi_boys_reference.csv` uses the schema `Month, L, M, S`.
+`Player data → validation → decimal age → BMI → growth references → z-scores → exploratory proxy labels → XGBoost → LOOCV → visual outputs`
 
-They are **not official WHO or clinical reference data** and must not be used for clinical, medical or player-selection decisions. Their purpose is solely to make the repository reproducible from a clean clone.
+## Stack
 
-## Using an external reference source
+- Python
+- pandas
+- NumPy
+- scikit-learn
+- XGBoost
+- matplotlib
+- openpyxl
 
-The script also accepts compatible CSV or Excel reference tables supplied through command-line arguments. If a third-party reference file is used, verify its methodology, provenance and redistribution terms before publishing it.
+## Validation strategy
 
-## Privacy rule
+The original internship sample contained 26 players. Leave-One-Out Cross-Validation (LOOCV) was used to avoid losing a large fraction of the sample to a conventional holdout set.
 
-Never commit the original internship database or any file containing identifiable youth-player information.
+LOOCV improves data efficiency in evaluation, but it does not remove the uncertainty associated with a very small sample.
+
+## Important limitation
+
+The maturity categories in this project are an **exploratory proxy** derived from the height-z-score rule used in the internship project. They are not a clinically validated maturity assessment.
+
+`height_zscore` is not used as an XGBoost predictor because it directly defines the target proxy. The machine-learning section therefore evaluates whether the remaining anthropometric variables can reproduce those derived labels. It should not be interpreted as validation of biological maturity status.
+
+## Reproducible public demo
+
+The repository is executable without private club data or external reference workbooks. The default run uses:
+
+- `data/synthetic_players.csv` — 26 fictitious players;
+- `data/reference/synthetic_hfa_boys_reference.csv` — synthetic height-for-age demonstration values;
+- `data/reference/synthetic_bmi_boys_reference.csv` — synthetic LMS demonstration values.
+
+These reference files are **not official clinical or WHO reference data**. They exist only so the public portfolio can be run end-to-end without redistributing third-party data.
+
+## Privacy
+
+No identifiable youth-player data are published. Names, birth dates and anthropometric measurements in the public demo are synthetic.
+
+## Run
+
+```bash
+pip install -r requirements.txt
+python python/maturation_analysis.py
+```
+
+The script generates:
+
+- `outputs/maturation/processed_players.csv`
+- `outputs/maturation/loocv_classification_report.json`
+- `outputs/maturation/loocv_confusion_matrix.png`
+- `outputs/maturation/feature_importance.png`
+- `outputs/maturation/proxy_distribution.png`
+
+To use another compatible dataset or reference source, override the CLI arguments documented with:
+
+```bash
+python python/maturation_analysis.py --help
+```
+
+## Example outputs
+
+### Proxy-label distribution
+
+![Proxy-label distribution](outputs/maturation/proxy_distribution.png)
+
+### LOOCV confusion matrix
+
+![LOOCV confusion matrix](outputs/maturation/loocv_confusion_matrix.png)
+
+### Feature importance
+
+![Feature importance](outputs/maturation/feature_importance.png)
+
+## Project context
+
+This repository is a portfolio reconstruction of an exploratory internship analysis. The public version prioritizes reproducibility, privacy, methodological transparency and clear separation between an analytical demonstration and a validated maturity-assessment tool.
