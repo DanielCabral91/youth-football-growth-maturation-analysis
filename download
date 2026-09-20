@@ -1,0 +1,17 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+.env
+.DS_Store
+Thumbs.db
+.Rhistory
+.RData
+.Ruserdata
+.Rproj.user/
+
+# Never commit private/raw internship data
+data/private/
+data/raw/
+FICHA DOS ATLETAS.xlsx
